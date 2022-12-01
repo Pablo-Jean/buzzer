@@ -92,7 +92,7 @@ void buzzer_interrupt(buzzer_t *buzzer){
 		buzzer->play_param.i++;
 		if (buzzer->play_param.i < buzzer->play_param.len){
 			if (buzzer->play_param.pTimes == NULL){
-				if (buzzer->play_param.loop == 1){
+				if (buzzer->play_param.loop == BUZZER_LOOP_ON){
 					buzzer->play_param.i %= 2;
 				}
 				if (buzzer->type == BUZZER_TYPE_ACTIVE){
@@ -101,6 +101,14 @@ void buzzer_interrupt(buzzer_t *buzzer){
 					}
 					else{
 						__buzzer_turn_on_gpio(buzzer);
+					}
+				}
+				else{
+					if (buzzer->play_param.i){
+						__buzzer_stop_pwm(buzzer);
+					}
+					else{
+						__buzzer_turn_on_pwm(buzzer, buzzer->play_param.freq);
 					}
 				}
 			}
@@ -178,7 +186,7 @@ void buzzer_start(buzzer_t *buzzer, uint16_t freq, uint16_t period, buzzer_loop_
         buzzer->play_param.pTimes = NULL;
         buzzer->play_param.pFreq = NULL;
         buzzer->active = BUZZER_IS_ACTIVE;
-        buzzer->play_param.len = 2;
+        buzzer->play_param.len = 2 + (loop == BUZZER_LOOP_ON);
         if (buzzer->type == BUZZER_TYPE_ACTIVE){
             __buzzer_start_gpio(buzzer);
         }
@@ -190,7 +198,8 @@ void buzzer_start(buzzer_t *buzzer, uint16_t freq, uint16_t period, buzzer_loop_
 }
 
 void buzzer_start_array(buzzer_t *buzzer, uint16_t *pPeriod, uint16_t *pFreq, uint16_t len){
-    if (buzzer != NULL && pPeriod != NULL){
+    if (buzzer != NULL && pPeriod != NULL &&
+    		(pFreq != NULL || buzzer->type == BUZZER_TYPE_ACTIVE)){
         buzzer->play_param.len = len;
         buzzer->play_param.i = 0;
         buzzer->play_param.pTimes = pPeriod;
