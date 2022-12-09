@@ -38,7 +38,9 @@ Bellow, in this example, we are configuring a buzzer in a generic chipset, with 
 ```C
 void __pwm_buzzer_chipset(uint32_t freq);
 // Buzzer Handler
-buzzer_t Buzzer = {  .pwmOut = __pwm_chipset,  .interruptMs = 50
+buzzer_t Buzzer = {  
+  .pwmOut = __pwm_chipset,  
+  .interruptMs = 50
 }
 
 // Functions
@@ -48,7 +50,7 @@ void __pwm_buzzer_chipset(uint32_t freq){
   }  
   else{    
     chipset_pwm_turnon();    
-    chipset_pwM_set_freq(freq);  
+    chipset_pwm_set_freq(freq);  
   }
 }
   
